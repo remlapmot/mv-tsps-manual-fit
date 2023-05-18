@@ -1,12 +1,17 @@
 ---
-title: "Fit MV TSPS manually"
+title: "Example Multiple Exposure Fit"
 author: "Tom Palmer"
 date: "2023-05-18"
-output:
-  html_document:
-    highlight: arrow
+format:
+  html:
+    embed-resources: true
     toc: true
+monofont: "Fira Mono"
 ---
+
+```{=html}
+<link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+```
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(
