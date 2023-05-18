@@ -1,10 +1,11 @@
 ---
-title: "Fit MV TSPS manuall"
+title: "Fit MV TSPS manually"
 author: "Tom Palmer"
 date: "2023-05-18"
 output:
   html_document:
     highlight: arrow
+    toc: true
 ---
 
 ```{r include=FALSE}
@@ -14,12 +15,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
+```{r message=FALSE}
 # library(OneSampleMR)
 library(ivreg)
 library(gtsummary)
 library(dplyr)
+library(Statamarkdown)
+library(haven)
 ```
+
+## Simulate data
 
 ```{r}
 set.seed(9)
@@ -41,20 +46,26 @@ dat  <- data.frame(Z1, Z2, X1, X2, Y)
 # summary(fit)
 ```
 
+## Logistic TSPS
+
 ```{r}
 fitx1     <- lm(X1 ~ Z1 + Z2, data = dat)
 dat$x1hat <- fitted.values(fitx1)
+dat$x1res <- residuals(fitx1)
 
 fitx2     <- lm(X2 ~ Z1 + Z2, data = dat)
 dat$x2hat <- fitted.values(fitx2)
+dat$x2res <- residuals(fitx2)
 
 yfit      <- glm(Y ~ x1hat + x2hat, data = dat, family = binomial)
 yfit %>% tbl_regression(exp = TRUE)
 ```
 
+## Linear TSPS 
+
 * TSLS multiple exposures fit
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 mvtsls <- ivreg(Y ~ X1 + X2 | Z1 + Z2, data = dat)
 mvtsls %>% tbl_regression()
 ```
@@ -64,4 +75,35 @@ mvtsls %>% tbl_regression()
 ```{r}
 yfit2 <- lm(Y ~ x1hat + x2hat, data = dat)
 yfit2 %>% tbl_regression()
+```
+
+## ivpoisson fit in Stata
+
+```{r}
+write_dta(dat, "dat.dta")
+```
+
+```{stata collectcode=TRUE, collapse=FALSE}
+use dat, clear
+ivpoisson cfunction Y (X1 X2 = Z1 Z2), nolog irr
+```
+
+* Compare to TSPS Poisson
+
+```{r}
+yfit3 <- glm(Y ~ x1hat + x2hat, data = dat, family = poisson)
+yfit3 %>% tbl_regression(exp = TRUE)
+```
+
+* TSRI Gamma distribution with log link
+
+```{r}
+dat <- 
+  dat %>%
+  mutate(Y1 = case_when(Y == 0 ~ 0.001,
+                        Y == 1 ~ 1))
+```
+```{r}
+yfit4 <- glm(Y1 ~ X1 + X2 + x1res + x2res, data = dat, family = Gamma(link = "log"))
+yfit4 %>% tbl_regression(exp = TRUE)
 ```
