@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r}
 # library(OneSampleMR)
+library(ivreg)
 library(gtsummary)
 library(dplyr)
 ```
@@ -49,4 +50,18 @@ dat$x2hat <- fitted.values(fitx2)
 
 yfit      <- glm(Y ~ x1hat + x2hat, data = dat, family = binomial)
 yfit %>% tbl_regression(exp = TRUE)
+```
+
+* TSLS multiple exposures fit
+
+```{r}
+mvtsls <- ivreg(Y ~ X1 + X2 | Z1 + Z2, data = dat)
+mvtsls %>% tbl_regression()
+```
+
+* Manual fit
+
+```{r}
+yfit2 <- lm(Y ~ x1hat + x2hat, data = dat)
+yfit2 %>% tbl_regression()
 ```
