@@ -66,6 +66,13 @@ yfit      <- glm(Y ~ x1hat + x2hat, data = dat, family = binomial)
 yfit %>% tbl_regression(exp = TRUE)
 ```
 
+## Logistic TSRI
+
+```{r}
+yfit1     <- glm(Y ~ x1hat + x2hat + x1res + x2res, data = dat, family = binomial)
+yfit1 %>% tbl_regression(exp = TRUE)
+```
+
 ## Linear TSPS 
 
 * TSLS multiple exposures fit
