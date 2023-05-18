@@ -6,18 +6,33 @@ output: html_document
 ---
 
 ```{r}
+# library(OneSampleMR)
+```
+
+```{r}
+set.seed(9)
 n <- 1000
 psi0 <- 0.5
 Z1 <- rbinom(n, 1, 0.5)
 Z2 <- rbinom(n, 2, .3)
 X1 <- rbinom(n, 1, 0.7*Z1 + 0.2*(1 - Z1))
-X2 <- rbinom(n, 1, 0.5*Z2 - Z1)
+p2 <- 0.1*Z2 + .4*Z1
+summary(p2)
+X2 <- rbinom(n, 1, p2)
 m0 <- plogis(1 + 0.8*X1 - 0.39*Z1)
 Y <- rbinom(n, 1, plogis(psi0*X1 + psi0*X2 + log(m0/(1 - m0))))
 dat <- data.frame(Z1, Z2, X1, X2, Y)
 ```
 
 ```{r}
-fit <- tsps(Y ~ X1 + X2 | Z1 + Z2 , data = dat, link = "logit")
-summary(fit)
+# fit <- tsps(Y ~ X1 + X2 | Z1 + Z2 , data = dat, link = "logit")
+# summary(fit)
+```
+
+```{r}
+fitx1 <- lm(X1 ~ Z1 + Z2, data = dat)
+
+fitx2 <- lm(X2 ~ Z1 + Z2, data = dat)
+
+yfit <- glm(Y)
 ```
