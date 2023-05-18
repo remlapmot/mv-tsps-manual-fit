@@ -54,11 +54,11 @@ dat  <- data.frame(Z1, Z2, X1, X2, Y)
 ## Logistic TSPS
 
 ```{r}
-fitx1     <- lm(X1 ~ Z1 + Z2, data = dat)
+fitx1     <- lm(X1 ~ Z1 + Z2, data = dat, na.action = na.exclude)
 dat$x1hat <- fitted.values(fitx1)
 dat$x1res <- residuals(fitx1)
 
-fitx2     <- lm(X2 ~ Z1 + Z2, data = dat)
+fitx2     <- lm(X2 ~ Z1 + Z2, data = dat, na.action = na.exclude)
 dat$x2hat <- fitted.values(fitx2)
 dat$x2res <- residuals(fitx2)
 
